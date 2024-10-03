@@ -8,7 +8,7 @@ const commands = [
         description: 'Replies with hey!',
     },
     {
-        name: 'Marco',
+        name: 'marco',
         description: 'Play Marco Polo with the bot!!',
     },
 ];

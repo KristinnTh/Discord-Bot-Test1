@@ -33,7 +33,7 @@ client.on('interactionCreate', (interaction) => {
         interaction.reply('hey!');
     }
 
-    if (interaction.commandName === 'Marco'){
+    if (interaction.commandName === 'marco'){
         interaction.reply('Polo!!');
     }
     console.log(interaction.commandName);
