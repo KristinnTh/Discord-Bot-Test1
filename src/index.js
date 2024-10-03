@@ -25,19 +25,34 @@ client.on('ready', (c => {
     console.log(`✅ ${c.user.tag} is online`);
 }));
 
-//Interact with Users/ Guild Members
-client.on('messageCreate', (message) => {
-    // If Author is Bot Do not reply
-    if(message.author.bot){
-        return;
+client.on('interactionCreate', (interaction) => {
+    //code below will only run if the interaction was slash command
+    if(!interaction.isChatInputCommand()) return;
+
+    if (interaction.commandName === 'hey'){
+        interaction.reply('hey!');
     }
-    //Console log the content of the message
-    console.log(message.content);
-    //Reply to user if they say hello
-    if (message.content === 'hello'){
-        message.reply('hello');
+
+    if (interaction.commandName === 'Marco'){
+        interaction.reply('Polo!!');
     }
-});
+    console.log(interaction.commandName);
+    });
 
 // Logging in the bot using the provided token (this is a mock token, replace it with your actual bot token)
 client.login(process.env.TOKEN);
+
+// ================= INTERACT WITH USERS ================= 
+// //Interact with Users/ Guild Members
+// client.on('messageCreate', (message) => {
+//     // If Author is Bot Do not reply
+//     if(message.author.bot){
+//         return;
+//     }
+//     //Console log the content of the message
+//     console.log(message.content);
+//     //Reply to user if they say hello
+//     if (message.content === 'hello'){
+//         message.reply('hello');
+//     }
+// });
