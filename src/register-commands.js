@@ -4,12 +4,12 @@ const{ REST, Routes } = require('discord.js');
 //Define commands
 const commands = [
     {
-        name: 'hey',
-        description: 'Replies with hey!',
+        name: 'info',
+        description: 'Get Information about the bot!',
     },
     {
-        name: 'marco',
-        description: 'Play Marco Polo with the bot!!',
+        name:'embedexample',
+        description: 'Test for Embed Message!',
     },
 ];
 
