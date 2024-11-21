@@ -8,8 +8,8 @@ const commands = [
         description: 'Get Information about the bot!',
     },
     {
-        name:'embedexample',
-        description: 'Test for Embed Message!',
+        name:'slot',
+        description: 'Try your luck at our slot machine!',
     },
 ];
 

@@ -53,7 +53,39 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     // SLOTS COMMAND FOR SLOT GAME
+    if (interaction.commandName === 'slot')
+    {
+        //Simulate slot machine spin
+        const symbols = ['🍎', '🍊', '🍒', '🍋‍🟩', '🍇', '💸', '💎'];
+        const result = 
+        [
+            //Symbols is the array above
+            //Math.random() generates a random floating-point number between 0 inclusive and 1 exclusive. Its used in this case to randomly pick an index from the symbols array.
+            //Math.random() * symbols.length: this multiplies the random value by the length of the symbols array.
+            //Math.floor(): This function rounds down the value to the nearest whole number so its a valid index for the array elements.
+            //the whole line below accesses a random element from the symbols array using the randomly generated index.
+            symbols[Math.floor(Math.random() * symbols.length)],
+            symbols[Math.floor(Math.random() * symbols.length)],
+            symbols[Math.floor(Math.random() * symbols.length)],
+        ];
 
+        //Check if they won
+        const isWinner = result[0] === result[1] && result [1] === result[2];
+
+        //Create an embed for the slot machine result
+        const embed = new EmbedBuilder()
+            .setColor(0xAFACAC)
+            .setTitle('🎰 Slot Machine 🎰')
+            .setDescription(isWinner ? 'Congratulations! You won!' : 'Better luck next time!')
+            .addFields
+            (
+                {name: 'Your Spin:', value:`${result[0]}${result[1]}${result[2]}`, inline: true},
+                { name: 'Prize:', value: isWinner ? '🎉 Jackpot!' : '❌ No prize this time.', inline: true }
+            )
+            .setFooter({ text: 'Spin again to try your luck!' });
+        // Reply with the embed
+        await interaction.reply({ embeds: [embed] });
+    }
     //SHOOTING GALLERY
 
     //RING TOSS
