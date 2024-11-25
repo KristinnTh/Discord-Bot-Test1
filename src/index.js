@@ -25,11 +25,14 @@ client.on('ready', (c => {
     console.log(`✅ ${c.user.tag} is online`);
 }));
 
+// Set up an event listener for interactions
+// Interactions are actions like slash commands, buttons, or context menu clicks
 client.on('interactionCreate', async (interaction) => {
     //code below will only run if the interaction was slash command
     if(!interaction.isChatInputCommand()) return;
 
-    // INFO COMMAND FOR INFORMATION ABOUT THE BOT
+    // ================= INFO COMMAND =================
+    // This block handles the `/info` command, which shows information about the bot
     if (interaction.commandName === 'info')
     {
         // Create the Embed for the info command
@@ -43,7 +46,7 @@ client.on('interactionCreate', async (interaction) => {
                 {name: 'Version', value:'**1.0.0**', inline: true},
                 {name: 'Created By', value: '**EllaBloom**', inline: false},
                 {name: 'Purpose', value: 'I love to Gamble 🎟 and go to the Carnival and thought why not bring it to discord!\n Play games, win prizes 🏆, and have fun!', inline: false},
-                {name: 'Carnival Games Available', value: '🎰 Slot Machine\n🎯 Shooting Gallery\n🎳 Ring Toss\n🍿 Popcorn Machine', inline: true}
+                {name: 'Carnival Games Available', value: '🎰 Slot Machine\n🎯 Shooting Gallery\n⭕ Ring Toss\n🍿 Popcorn Machine', inline: true}
             )
             .setFooter({text: 'Visit the carnival often for more fun and games!🎪'})
             .setTimestamp();
@@ -52,7 +55,8 @@ client.on('interactionCreate', async (interaction) => {
             await interaction.reply({ embeds: [embed] });
     }
 
-    // SLOTS COMMAND FOR SLOT GAME
+    // ================= SLOT MACHINE GAME =================
+    // This block handles the `/slot` command, which simulates a slot machine game
     if (interaction.commandName === 'slot')
     {
         //Simulate slot machine spin
@@ -79,6 +83,7 @@ client.on('interactionCreate', async (interaction) => {
             .setDescription(isWinner ? 'Congratulations! You won!' : 'Better luck next time!')
             .addFields
             (
+                //Display the spin result and the prize
                 {name: 'Your Spin:', value:`${result[0]}${result[1]}${result[2]}`, inline: true},
                 { name: 'Prize:', value: isWinner ? '🎉 Jackpot!' : '❌ No prize this time.', inline: true }
             )
@@ -88,11 +93,59 @@ client.on('interactionCreate', async (interaction) => {
     }
     //SHOOTING GALLERY
 
-    //RING TOSS
+     // ================= RING TOSS GAME =================
+    if (interaction.commandName === 'ringtoss')
+    {
+        //Define possible peg targets and their associated prizes
+        const pegs = 
+        [
+            {name: '🔴 Red Peg', prize: '🎁 Small Prize', tickets: 5},
+            {name: '🔵 Blue Peg', prize: '🎉 Medium Prize', tickets: 15},
+            {name: '🟢 Green Peg', prize: '🎊 Grand Prize', tickets: 30},
+            {name: '❌ Miss', prize: '💔 No Prize', tickets: 0},
+        ];
+
+        //Randomly determine the result
+        const tossResult = pegs[Math.floor(Math.random() * pegs.length)];
+
+        //Create an embed for the slot machine result
+        const embed = new EmbedBuilder()
+            .setColor(0xAFACAC) // neutral color
+            .setTitle('⭕ Ring Toss')
+            .setDescription('You tossed a ring...')
+            .addFields
+            (
+                {name: 'Target:', value: tossResult.name, inline: true},
+                {name: 'Prize:', value: tossResult.prize, inline: true},
+                {name: 'Tickets Won:', value: `${tossResult.tickets}`, inline: true}
+            )
+            .setFooter({ text: 'Try again to win big!' });
+        
+        // Reply with the embed
+        await interaction.reply({ embeds: [embed] });
+
+        // If the user wins tickets, add to their total
+        if (tossResult.tickets > 0) 
+        {
+            const userId = interaction.user.id;// Identify the user who played the game.
+            addTicketsToUser(userId, tossResult.tickets); // Custom function for ticket storage
+        }
+    }
 
     //POPCORN MACHINE
 
     //PRIZES
+
+     // Function to add tickets (simple in-memory storage)
+    function addTicketsToUser(userId, tickets) 
+    {
+        if (!global.ticketStorage) global.ticketStorage = {};// Initialize storage if not already done.
+        if (!global.ticketStorage[userId]) global.ticketStorage[userId] = 0;// Initialize user tickets if not present.
+
+        // Add tickets to the user's total.
+        global.ticketStorage[userId] += tickets;
+        console.log(`${tickets} tickets added to ${userId}. Total: ${global.ticketStorage[userId]}`);
+    }
     
     console.log(interaction.commandName);
     });
