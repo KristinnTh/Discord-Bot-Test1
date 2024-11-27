@@ -143,19 +143,83 @@ client.on('interactionCreate', async (interaction) => {
     //PRIZES
 
      // Function to add tickets (simple in-memory storage)
-    function addTicketsToUser(userId, tickets) 
+    function addTicketsToUser(discord_id, tickets) 
     {
-        // Query to check if the user already exists in the database
-    const query = 'INSERT INTO users (user_id, tickets) VALUES (?, ?) ON DUPLICATE KEY UPDATE tickets = tickets + ?';
-    const values = [userId, tickets, tickets];
+        //First check if the user exists in the users table
+        const checkUserQuery = 'SELECT id FROM users WHERE discord_id = ?';
+        db.query(checkUserQuery, [discord_id], (err, result) => 
+        {
+            if (err)
+            {
+                console.error('Error checking user in users table:', err);
+                return;
+            }
 
-    db.query(query, values, (err, results) => {
-        if (err) {
-            console.error('Error updating tickets:', err);
-        } else {
-            console.log(`${tickets} tickets added to user ${userId}`);
-        }
-    });
+            if (result.length > 0)
+            {
+                //User exists so get their user_id
+                const user_id = result[0].id;
+
+                //check if the user already has a record in the tickets table
+                const checkTicketsQuery = 'SELECT * FROM tickets WHERE user_id = ?';
+                db.query(checkTicketsQuery, [user_id], (err, ticketResults) => 
+                {
+                    if (err)
+                    {
+                        console.error('Error checking tickets table:', err);
+                        return;
+                    }
+
+                    if (ticketResults.length > 0)
+                    {
+                        // if the user already has tickets, update the ticket count
+                        const updateTicketsQuery = 'UPDATE tickets SET ticket_count = ticket_count + ? WHERE user_id = ?';
+                        db.query(updateTicketsQuery, [tickets, user_id], (err, updateResults) => 
+                        {
+                            if (err)
+                            {
+                                console.error('Error updating tickets:', err);
+                            } 
+                            else
+                            {
+                                console.log(`${tickets} tickets added to user ${discord_id}`);
+                            }
+                        });
+                    } 
+                    else
+                    {
+                        //if the user doesn't have tickets, insert a new record
+                        const insertTicketsQuery = 'INSERT INTO tickets (user_id, ticket_count) VALUES (?, ?)';
+                        db.query(insertTicketsQuery, [user_id, tickets], (err, insertResults) => 
+                        {
+                            if (err)
+                            {
+                                console.error('Error inserting tickets:', err);
+                            } 
+                            else
+                            {
+                                console.log(`${tickets} tickets added to user ${discord_id}`);
+                            }
+                        });
+                    }
+                });
+            } 
+            else
+            {
+                // user does not exist, so insert them
+                const insertUserQuery = 'INSERT INTO users (discord_id, username) VALUES (?, ?)';
+                db.query(insertUserQuery, [discord_id, interaction.user.username], (err, insertResults) => {
+                    if (err){
+                        console.error('Error inserting user:', err);
+                        return;
+                    }
+                    console.log(`User with Discord ID ${discord_id} does not exist in the database.`);
+
+                    //Call the addTicketstoUser function again now that user created
+                    addTicketsToUser(discord_id, tickets);
+                });
+            }
+        });
     }
     
     console.log(interaction.commandName);
