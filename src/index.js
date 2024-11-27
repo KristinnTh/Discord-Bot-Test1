@@ -3,6 +3,8 @@ require('dotenv').config();
 //Clients = Main class used to interact with the discord API. (Allows us to handle events, send messages, join servers, and more)
 //IntentsBitField = Used to Specify what events my bot listens to from the discord API like messages reactions etc (limits what data my bot has access to)
 const {Client, IntentsBitField, EmbedBuilder} = require('discord.js');
+const db = require('../config/db'); // database
+
 
 // Creating a new instance of the Client class, initializing the bot with specific intents
 // Intents are flags that tell Discord what kind of events/data the bot will receive and process.
@@ -92,6 +94,10 @@ client.on('interactionCreate', async (interaction) => {
         await interaction.reply({ embeds: [embed] });
     }
     //SHOOTING GALLERY
+    if(interaction.commandName === 'shoot')
+    {
+        
+    }
 
      // ================= RING TOSS GAME =================
     if (interaction.commandName === 'ringtoss')
@@ -139,12 +145,17 @@ client.on('interactionCreate', async (interaction) => {
      // Function to add tickets (simple in-memory storage)
     function addTicketsToUser(userId, tickets) 
     {
-        if (!global.ticketStorage) global.ticketStorage = {};// Initialize storage if not already done.
-        if (!global.ticketStorage[userId]) global.ticketStorage[userId] = 0;// Initialize user tickets if not present.
+        // Query to check if the user already exists in the database
+    const query = 'INSERT INTO users (user_id, tickets) VALUES (?, ?) ON DUPLICATE KEY UPDATE tickets = tickets + ?';
+    const values = [userId, tickets, tickets];
 
-        // Add tickets to the user's total.
-        global.ticketStorage[userId] += tickets;
-        console.log(`${tickets} tickets added to ${userId}. Total: ${global.ticketStorage[userId]}`);
+    db.query(query, values, (err, results) => {
+        if (err) {
+            console.error('Error updating tickets:', err);
+        } else {
+            console.log(`${tickets} tickets added to user ${userId}`);
+        }
+    });
     }
     
     console.log(interaction.commandName);
