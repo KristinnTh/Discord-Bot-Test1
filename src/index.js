@@ -99,6 +99,52 @@ client.on('interactionCreate', async (interaction) => {
         
     }
 
+    // ================= Balance =================
+    if (interaction.commandName === 'balance')
+    {
+        //get user discord id
+        const userId = interaction.user.id;
+        console.log("User ID:", userId); //Log the user ID being used
+
+        //Query the database for the user's ticket balance
+        const getBalanceQuery =
+        `SELECT t.ticket_count
+        FROM users u
+        INNER JOIN tickets t ON u.id = t.user_id
+        WHERE u.discord_id = ?`;
+
+
+        db.query(getBalanceQuery, [userId], (err, results) => 
+        {
+            if(err)
+            {
+                console.error('Error fetching ticket balance:', err);
+                return interaction.reply({content: 'sorry, there was an error fetching your balance. Please try again later.', ephemeral: true});
+            }
+
+            // Check if the user exists in the database
+            if (results.length > 0)
+            {
+                const ticketCount = results[0].ticket_count;
+
+                //Create an Embed to display the balance
+                const embed = new EmbedBuilder()
+                .setColor(0xFFD700)//Gold color for tickets
+                .setTitle('🎟️ Ticket Balance')
+                .setDescription(`You currently have **${ticketCount} tickets**.`)
+                .setFooter({text: 'Play more games to earn more tickets!' })
+                .setTimestamp();
+
+                // Reply with the balance embed
+                interaction.reply({ embeds: [embed] });
+            }
+            else
+            {
+                // User has no tickets in the database
+                interaction.reply({ content: 'You have no tickets yet. Play some games to start earning!', ephemeral: true });       
+            }
+        });
+    }
      // ================= RING TOSS GAME =================
     if (interaction.commandName === 'ringtoss')
     {
