@@ -19,6 +19,10 @@ const commands = [
         name:'balance',
         description: 'Check How many tickets you have!',
     },
+    {
+        name:'shoot',
+        description: 'Check out our shooting gallery to test your reaction time!',
+    },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);

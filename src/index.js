@@ -96,7 +96,92 @@ client.on('interactionCreate', async (interaction) => {
     //SHOOTING GALLERY
     if(interaction.commandName === 'shoot')
     {
-        
+        // targets here
+        const targets = ['🪿', '🎯', '🦢', '⭐', '🦆',];
+        const correctTarget = '🎯'; //This is the target the player must shoot
+
+        // Shuffle or randomize target positions
+        const shuffledTargets = targets.sort(() => Math.random() - 0.5);
+
+        // create embed
+        const embed = new EmbedBuilder()
+        .setColor(0xfff)
+        .setTitle('🎯 SHOOTING GALLERY 🎯')
+        .setDescription(`React to the **${correctTarget}** within 5 seconds!`)
+        .addFields
+        (
+            {name:'Targets:', value: shuffledTargets.join(' ') }
+        );
+
+        // Defer the reply to allow more time
+        await interaction.deferReply();
+
+        // Send the embed and get the sent message object
+        const sentMessage = await interaction.channel.send({ embeds: [embed] });
+
+        // Add reactions for the targets
+        for (const target of shuffledTargets) 
+        {
+            await sentMessage.react(target);
+        }
+
+        // Create a filter to listen for reactions (from the same user who triggered the command)
+        const filter = (reaction, user) => 
+        {
+            return shuffledTargets.includes(reaction.emoji.name) && user.id === interaction.user.id;
+        };
+
+        // Await a reaction from the user within 5 seconds
+        try 
+        {
+            const collected = await sentMessage.awaitReactions({
+                filter,
+                max: 1, // Only need the first reaction
+                time: 5000, // 5 seconds timeout
+                errors: ['time'], // Error if no reaction within time limit
+            });
+
+            // Get the first reaction
+            const reaction = collected.first();
+
+            // Check if the reaction is the correct target
+            if (reaction.emoji.name === correctTarget) 
+            {
+                const successEmbed = new EmbedBuilder()
+                    .setColor(0x32CD32) // Green color for success
+                    .setTitle('🎯 SHOOTING GALLERY 🎯')
+                    .setDescription('🎉 You hit the target! Well done!')
+                    .addFields({ name: 'You hit:', value: correctTarget, inline: true })
+                    .setFooter({ text: 'Congratulations! Try again for more fun!' });
+
+                // Reply with success message
+                await interaction.reply({ embeds: [successEmbed] });
+            } 
+            else 
+            {
+            const failEmbed = new EmbedBuilder()
+                .setColor(0xFF6347) // Red color for failure
+                .setTitle('🎯 SHOOTING GALLERY 🎯')
+                .setDescription('❌ You missed the target. Better luck next time!')
+                .addFields({ name: 'You hit:', value: reaction.emoji.name, inline: true })
+                .setFooter({ text: 'Try again and aim carefully!' });
+
+            // Reply with failure message
+            await interaction.reply({ embeds: [failEmbed] });
+            }
+
+        } 
+        catch (err) 
+        {
+            // If no reaction within 5 seconds
+            const timeoutEmbed = new EmbedBuilder()
+                .setColor(0xFFA500) // Orange color for timeout
+                .setTitle('🎯 SHOOTING GALLERY 🎯')
+                .setDescription('⏰ Time’s up! You missed your chance to shoot.')
+                .setFooter({ text: 'Better luck next time!' });
+
+            await interaction.reply({ embeds: [timeoutEmbed] });
+        }
     }
 
     // ================= Balance =================
