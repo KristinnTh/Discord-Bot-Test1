@@ -10,7 +10,7 @@ Welcome to the **Carnival Bot**! A Discord bot designed to bring the fun and exc
 - **Slot Machine** (`/slot`)  
   Spin the reels and test your luck for a chance to win a jackpot!  
 - **Shooting Gallery** (`/shoot`)  
-  React to the target within a time limit and see if your aim is sharp!  
+  React to the target within a time limit and see if your aim is sharp!  (Currently has a bug we are working on.)
 - **Ring Toss** (`/ringtoss`)  
   Toss rings and aim for the pegs to win prizes and tickets!  
 - **Popcorn Machine** *(Coming Soon!)*  
