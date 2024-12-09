@@ -128,6 +128,7 @@ client.on('interactionCreate', async (interaction) => {
         // Create a filter to listen for reactions (from the same user who triggered the command)
         const filter = (reaction, user) => 
         {
+            console.log('Filtering:', reaction.emoji.name);
             return shuffledTargets.includes(reaction.emoji.name) && user.id === interaction.user.id;
         };
 
@@ -270,6 +271,10 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     //POPCORN MACHINE
+    if (interaction.commandName === 'popcorn')
+    {
+
+    }
 
     //PRIZES
 

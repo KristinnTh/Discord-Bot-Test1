@@ -23,6 +23,10 @@ const commands = [
         name:'shoot',
         description: 'Check out our shooting gallery to test your reaction time!',
     },
+    {
+        name:'popcorn',
+        description: 'Popcorn mini game! pop as much popcorn as possible without burning too many!',
+    },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
